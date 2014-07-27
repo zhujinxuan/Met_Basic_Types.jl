@@ -42,6 +42,8 @@ function A_selected_area ( pwhole :: AnArea_Regular, llon:: Float64,rlon :: Floa
   plat= plat';
   configs = copy(pwhole.configs)
   configs["wesn"] = [llon, rlon, slat, nlat ] 
+  configs["wplat"] = pwhole.plat
+  configs["wplon"] = pwhole.plon
   plon_selected_on_by = fill(false, size(pwhole.plon))
   plon_selected_on_by[indexlon, indexlat] = true
   data_selected_on_plon_by = fill(true, size(plon_selected_on_by[indexlon,indexlat] ) )

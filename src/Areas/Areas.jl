@@ -58,5 +58,5 @@ end
 
 export Any_Area_is_an_Area, AnArea_Regular
 export Variable_Selected_within
-include("special_areas.jl")
 include("deal_with_models/Regular_Area_Select.jl")
+include("special_areas.jl")
