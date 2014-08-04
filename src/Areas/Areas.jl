@@ -15,7 +15,7 @@ end
 
 
 # Select time series
-function Selected_within(p_area :: AnArea_Regular, sst :: Array{Any,3}; map_to :: Symbol = :default) 
+function Selected_within(p_area :: AnArea_Regular, sst :: Array{Float64,3}; map_to :: Symbol = :default) 
   plon_selected_on_by = p_area.plon_selected_on_by 
   data_selected_on_plon_by = p_area.data_selected_on_plon_by
   plon_selected_on_by = repmat(plon_selected_on_by[:],1,size(sst,3))
@@ -39,7 +39,7 @@ function Selected_within(p_area :: AnArea_Regular, sst :: Array{Any,3}; map_to :
 end
 
 
-function Selected_within(p_area :: AnArea_Regular, sst :: Array{Any,2}; map_to :: Symbol = :default) 
+function Selected_within(p_area :: AnArea_Regular, sst :: Array{Float64,2}; map_to :: Symbol = :default) 
   plon_selected_on_by = p_area.plon_selected_on_by 
   data_selected_on_plon_by = p_area.data_selected_on_plon_by
   if (map_to == :default )
