@@ -4,7 +4,4 @@ module Met_Basic_Types
 include("Areas/Areas.jl")
 include("Model_Operations/area.jl")
 include("often_used/all.jl")
-
-
-
 end # module

@@ -8,7 +8,7 @@ type masks_NaN_2dim <: masks_Forward_Backward
   mask :: Array{Bool}
   maskp :: Array{Bool}
 
-  rD1 :; Array{Int64,1}
+  rD1 :: Array{Int64,1}
   mask2 :: Array{Bool,1}
 end
 
@@ -19,7 +19,7 @@ function ForwardD2(xar, Dim1 :: Array{Int64})
   xp   = permutedims(xar,[D1,D2])
   maskp = isnan(xp)
 
-  x2 = reshape(xp, mapreduce(p->size(xar,p),*,D1),mapreduce(p->size(xar,p),*,D2))
+  x2 = reshape(xp, reduce(*,size(xar,D1...)),reduce(*,size(xar,D2...)))
   rD1 = find((sum(isnan(x2),2)).==0)
   mask2 = isnan(X2)
   M    = masks_NaN_2dim(D1,D2,mask,maskp,rD1,mask2)
@@ -54,16 +54,18 @@ end
 
 abstract Met_DA_Functor{N}
 abstract REG_Functor <: Met_DA_Functor{2}
+export Met_DA_Functor
+export REG_Functor
 
 type _AR2_REG <: REG_Functor end
 
 type _EOF_Functor <: Met_DA_Functor{1} end
 type _SVD_Functor <: Met_DA_Functor{2} end
 
-EOFF = _EOF_Functor(); SVDF = _SVD_Functor()
+EOFF = _EOF_Functor(); SVDF = _SVD_Functor();
 export EOFF, _EOF_Functor, SVDF, _SVD_Functor;
 
-function Fevaluate(Met_DA_Functor{1} ,x)
+function Fevaluate(EE :: Met_DA_Functor{1} ,x)
   error("No function for pure")
 end
 
@@ -89,7 +91,7 @@ function DFevaluate( EE :: _EOF_Functor,xarr, Dim1, ;nsv = 3)
   return (S2,V,D,ratio)
 end
 
-function DFevaluate ( SS :: _SVD_FunctorA, xarr, yarr, Dim1; nsv = 3)
+function DFevaluate ( SS :: _SVD_Functor, xarr, yarr, Dim1; nsv = 3)
   (Mx, rx1) = ForwardD2(xarr,Dim1)
   (My, ry1) = ForwardD2(yarr,Dim2)
   (Sx, Sy, V, ratio, PC1x, PC1y) = Fevaluate(SS, rx1,ry1)
