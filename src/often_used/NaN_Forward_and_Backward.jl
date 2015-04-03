@@ -45,10 +45,7 @@ function LBackwardD2( r2::Array{Float64,2} , M :: masks_Forward_Backward;)
   x2 = fill(NaN,size(M.mask2,1),size(r2,2))
   x2[rD1,:] = r2
 
-  reshape(x2,[size(M.mask,[M.Dim1]...)...,size(r2,2)]...)
-  Xp = repeat(Xp,[repmat([1],length(M.Dim1)),size(r2,2)])
-
-  Xp = reshape(x2,size(Xp))
+  Xp = reshape(x2,[size(M.mask,[M.Dim1]...)...,size(r2,2)]...)
   return Xp
 end
 
@@ -91,14 +88,14 @@ function DFevaluate( EE :: _EOF_Functor,xarr, Dim1, ;nsv = 3)
   return (S2,V,D,ratio)
 end
 
-function DFevaluate ( SS :: _SVD_Functor, xarr, yarr, Dim1; nsv = 3)
-  (Mx, rx1) = ForwardD2(xarr,Dim1)
-  (My, ry1) = ForwardD2(yarr,Dim2)
+function DFevaluate ( SS :: _SVD_Functor, xarr, yarr, Dim1x, Dim1y; nsv = 3)
+  (Mx, rx1) = ForwardD2(xarr,Dim1x)
+  (My, ry1) = ForwardD2(yarr,Dim1y)
   (Sx, Sy, V, ratio, PC1x, PC1y) = Fevaluate(SS, rx1,ry1)
   S2x = LBackwardD2(Sx,Mx)
   S2y = LBackwardD2(Sy,My)
-  Pctx = reshape(Pc1x,size(Mx.maskp,[(ndims(Mx.maskp) - length(Mx.Dim2) +1):length(Mx.maskp)]...))
-  Pcty = reshape(Pc1y,size(My.maskp,[(ndims(My.maskp) - length(My.Dim2) +1):length(My.maskp)]...))
+  Pctx = reshape(Pc1x,size(Mx.mask,Mx.Dim2))
+  Pcty = reshape(Pc1y,size(My.mask,My.Dim2))
   return (Sx,Sy,ratio,V,Pctx,Pcty)
 end
 
