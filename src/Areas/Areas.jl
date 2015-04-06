@@ -21,7 +21,7 @@ function Selected_within{N}(p_area :: AnArea_Regular,
   if (map_to == :default )
     sst1 = sst1[find(plon_s[:]),:];
     sst1[find(!data_s[:]),:] = NaN
-    sst1 = reshape(sst[plon_s],size(data_s)...,size(sst,[3:ndims(sst)])...)
+    sst1 = reshape(sst1,size(data_s)...,size(sst,(3:ndims(sst))...)...)
   elseif(map_to == :whole )
     Filter1= find(plon_s[:])
     Filter2 = Filter1[find(data_s[:])]
