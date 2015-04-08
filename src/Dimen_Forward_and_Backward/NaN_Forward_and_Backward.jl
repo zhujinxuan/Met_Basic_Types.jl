@@ -30,7 +30,9 @@ function BackwardD2( r2::Array{Float64,2} , M :: masks_Forward_Backward;)
   x2 = fill(NaN,size(M.mask2))
   x2[rD1,:] = r2
   Xp = reshape(x2,size(M.mask,[M.Dim1, M.Dim2]...))
-  Xar = permutedims(Xp, indexin([1:ndims(Xp)],[M.Dim1,M.Dim2]))
+  #= Xar = permutedims(Xp, indexin([1:ndims(Xp)],[M.Dim1,M.Dim2])) =#
+  #= Xar = permutedims(Xp, indexin([1:ndims(Xp)],[M.Dim1,M.Dim2])) =#
+  Xar = ipermutedims(Xp, [M.Dim1,M.Dim2])
   return Xar
 end
 
