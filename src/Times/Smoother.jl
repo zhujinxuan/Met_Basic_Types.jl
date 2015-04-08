@@ -12,7 +12,6 @@ function TProcess{N} (sst :: Array{Float64,N}, TS :: Time_Smoother,
                       Dim :: (Int64...,) = TS.DefaultDim )
 
   sst1 = sst 
-  println(Dim)
   for (d,s) in zip(Dim, TS.Smoothed_Samples)
     dsst = size(sst1, d)
     inds = [s:s:dsst;]
