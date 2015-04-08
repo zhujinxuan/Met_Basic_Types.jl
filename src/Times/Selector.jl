@@ -18,3 +18,4 @@ function TProcess{N} (sst :: Array{Float64,N}, TS :: Time_Selector, time :: (Arr
   end
   return sst1
 end
+export TProcess, Time_Selector;
