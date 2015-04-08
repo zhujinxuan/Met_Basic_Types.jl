@@ -14,4 +14,6 @@ function TProcess{N} (sst :: Array{Float64,N}, TS :: Time_Operator, time :: Arra
   error("Still No function for pure Time_Operator");
 end
 
+include("Simple_Functions.jl")
+
 export Time_Operator

@@ -13,12 +13,14 @@ function TProcess{N} (sst :: Array{Float64,N}, TS :: Time_Smoother,
 
   sst1 = sst 
   for (d,s) in zip(Dim, TS.Smoothed_Samples)
-    dsst = size(sst1, d)
-    inds = [s:s:dsst;]
-    sst1 = slicedim(sst1, d, 1:inds[end])
-    si = [size(sst1)...;];
-    si[d] = s; insert!(si,d+1,length(inds));
-    sst1 = squeeze(mean(reshape(sst1, si...),d),d)
+    if (s !=1)
+      dsst = size(sst1, d)
+      inds = [s:s:dsst;]
+      sst1 = slicedim(sst1, d, 1:inds[end])
+      si = [size(sst1)...;];
+      si[d] = s; insert!(si,d+1,length(inds));
+      sst1 = squeeze(mean(reshape(sst1, si...),d),d)
+    end
   end
   return sst1
 end
