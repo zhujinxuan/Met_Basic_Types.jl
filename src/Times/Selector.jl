@@ -5,11 +5,12 @@ type Time_Selector
   Ender   :: (Int64...,)
 end
 
-function T_Smoother ( Dim  , Smoothed_Samples )
-  Time_Smoother(tuple(Dim...), tuple(Smoothed_Samples...))
+function T_Selector ( Dim  , Starter, Ender )
+  Time_Selector(tuple(Dim...), tuple(Starter...), tuple(Ender...))
 end
+export T_Selector
 
-function TProcess{N} (sst :: Array{Float64,N}, TS :: Time_Selector, time :: (Array{Int64,1}...,), 
+function TProcess (sst :: Array{Float64}, TS :: Time_Selector, time :: (Array{Int64,1}...,), 
                       Dim :: (Int64...,) = TS.DefaultDim )
   sst1 = sst
   for (d,td, ster, eder) in zip(Dim,time, TS.Starter, TS.Ender)
@@ -18,4 +19,5 @@ function TProcess{N} (sst :: Array{Float64,N}, TS :: Time_Selector, time :: (Arr
   end
   return sst1
 end
+
 export TProcess, Time_Selector;
