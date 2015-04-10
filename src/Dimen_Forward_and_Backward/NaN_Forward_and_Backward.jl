@@ -47,7 +47,7 @@ function LBackwardD2( r2::Array{Float64,2} , M :: masks_Forward_Backward;)
   x2 = fill(NaN,size(M.mask2,1),size(r2,2))
   x2[M.rD1,:] = r2
 
-  Xp = reshape(x2,[size(M.mask,[M.Dim1]...)...,size(r2,2)]...)
+  Xp = reshape(x2,[size(M.mask,M.Dim1...)...,size(r2,2);]...)
   return Xp
 end
 
@@ -70,18 +70,23 @@ function Fevaluate(EE :: Met_DA_Functor{1} ,x)
   error("No function for pure")
 end
 
-function Fevaluate( EE :: _EOF_Functor, xarr; nsv = 3) 
+function Fevaluate( EE :: _EOF_Functor, xarr:: Array{Float64,2}; nsv = 3) 
+  xarr = RemoveTr(xarr)
+  xarr = broadcast(-, xarr,mean(xarr,2))
   #= (S,V,D) = svds(xarr,nsv=nsv) =#
-  xarr = broadcast(-,xarr, mean(xarr,2))
   (S,V,D) = svd(xarr); 
   S = S[:,1:nsv]; V = V[1:nsv]; D= D[:,1:nsv];
+  PC = S' * xarr
   ratio = V.^2/sum(xarr.^2)
-  return(S, V, D, ratio)
+  return(S, V, PC, ratio)
 end
 
-function Fevaluate( FF :: _SVD_Functor, xarr, yarr; nsv = 3) 
-  xarr = broadcast(-,xarr, mean(xarr,2))
-  yarr = broadcast(-,yarr, mean(yarr,2))
+function Fevaluate( FF :: _SVD_Functor, xarr :: Array{Float64,2}, 
+  yarr :: Array{Float64,2}; nsv = 3) 
+  xarr = RemoveTr(xarr)
+  yarr = RemoveTr(yarr)
+  xarr = broadcast(-, xarr,mean(xarr,2))
+  yarr = broadcast(-, yarr,mean(yarr,2))
   covxy = xarr*yarr'
   #= (Sx,V,Sy) = svds(covxy,nsv=nsv) =#
   (Sx,V,Sy) = svd(covxy); 
@@ -92,21 +97,26 @@ function Fevaluate( FF :: _SVD_Functor, xarr, yarr; nsv = 3)
   return (Sx, Sy, V, ratio, PCx, PCy)
 end
 
-function DFevaluate( EE :: _EOF_Functor,xarr, Dim1, ;nsv = 3)
+function DFevaluate(EE :: _EOF_Functor,xarr :: Array{Float64},
+                    Dim1 :: Array{Int64,1} ;nsv  :: Int64 = 3)
   (M,real1D) = ForwardD2(xarr, Dim1)
   (S,V,D,ratio) = Fevaluate(EE, real1D,nsv = nsv)
   S2 = LBackwardD2(S,M)
   return (S2,V,D,ratio)
 end
 
-function DFevaluate ( SS :: _SVD_Functor, xarr, yarr, Dim1x, Dim1y; nsv = 3)
+function DFevaluate (SS :: _SVD_Functor, 
+                     xarr :: Array{Float64}, yarr :: Array{Float64},
+                     Dim1x :: Array{Int64,1}, Dim1y :: Array{Int64,1} = Dim1x
+                     ;nsv :: Int64 = 3)
+
   (Mx, rx1) = ForwardD2(xarr,Dim1x)
   (My, ry1) = ForwardD2(yarr,Dim1y)
   (Sx, Sy, V, ratio, PC1x, PC1y) = Fevaluate(SS, rx1,ry1, nsv= nsv)
-  S2x = LBackwardD2(Sx,Mx)
-  S2y = LBackwardD2(Sy,My)
-  Pctx = reshape(Pc1x,size(Mx.mask,Mx.Dim2))
-  Pcty = reshape(Pc1y,size(My.mask,My.Dim2))
+  Sx = LBackwardD2(Sx,Mx)
+  Sy = LBackwardD2(Sy,My)
+  Pctx = reshape(PC1x,size(Mx.mask,Mx.Dim2...))
+  Pcty = reshape(PC1y,size(My.mask,My.Dim2...))
   return (Sx,Sy,ratio,V,Pctx,Pcty)
 end
 
