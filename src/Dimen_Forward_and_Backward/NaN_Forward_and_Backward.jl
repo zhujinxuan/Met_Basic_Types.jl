@@ -1,4 +1,3 @@
-abstract masks_Forward_Backward
 type masks_NaN_2dim <: masks_Forward_Backward
 
   Dim1 :: Array{Int64,1}
@@ -12,7 +11,7 @@ type masks_NaN_2dim <: masks_Forward_Backward
 end
 
 #= ForwardD2(xar, Dim1 ) = ForwardD2(xar, [Dim1...;]); =#
-function ForwardD2(xar, Dim1 :: Array{Int64})
+function ForwardD2(xar :: Array{Float64}, Dim1 :: Array{Int64})
   mask = isnan(xar)
   D1   = Dim1
   D2   = filter(x->!in(x,D1),[1:ndims(xar);])
@@ -26,7 +25,7 @@ function ForwardD2(xar, Dim1 :: Array{Int64})
   return (M , x2[rD1,:])
 end
 
-function BackwardD2( r2::Array{Float64,2} , M :: masks_Forward_Backward;)
+function BackwardD2( r2::Array{Float64,2} , M :: masks_NaN_2dim;)
   x2 = fill(NaN,size(M.mask2))
   x2[M.rD1,:] = r2
   Xp = reshape(x2,size(M.mask,[M.Dim1, M.Dim2]...))
@@ -36,66 +35,21 @@ function BackwardD2( r2::Array{Float64,2} , M :: masks_Forward_Backward;)
   return Xar
 end
 
-function LBackwardD2( r2::Array{Float64,1} , M :: masks_Forward_Backward;)
+function LBackwardD2( r2::Array{Float64,1} , M :: masks_NaN_2dim;)
   x2 = fill(NaN,size(M.mask2,1))
   x2[M.rD1] = r2
   Xp = reshape(x2,size(M.mask,[M.Dim1]...))
   return Xp
 end
 
-function LBackwardD2( r2::Array{Float64,2} , M :: masks_Forward_Backward;)
+function LBackwardD2( r2::Array{Float64,2} , M :: masks_NaN_2dim;)
   x2 = fill(NaN,size(M.mask2,1),size(r2,2))
   x2[M.rD1,:] = r2
 
   Xp = reshape(x2,[size(M.mask,M.Dim1...)...,size(r2,2);]...)
   return Xp
 end
-
 export ForwardD2,BackwardD2,LBackwardD2;
-
-abstract Met_DA_Functor{N}
-abstract REG_Functor <: Met_DA_Functor{2}
-export Met_DA_Functor
-export REG_Functor
-
-type _AR2_REG <: REG_Functor end
-
-type _EOF_Functor <: Met_DA_Functor{1} end
-type _SVD_Functor <: Met_DA_Functor{2} end
-
-EOFF = _EOF_Functor(); SVDF = _SVD_Functor();
-export EOFF, _EOF_Functor, SVDF, _SVD_Functor;
-
-function Fevaluate(EE :: Met_DA_Functor{1} ,x)
-  error("No function for pure")
-end
-
-function Fevaluate( EE :: _EOF_Functor, xarr:: Array{Float64,2}; nsv = 3) 
-  xarr = RemoveTr(xarr)
-  xarr = broadcast(-, xarr,mean(xarr,2))
-  #= (S,V,D) = svds(xarr,nsv=nsv) =#
-  (S,V,D) = svd(xarr); 
-  S = S[:,1:nsv]; V = V[1:nsv]; D= D[:,1:nsv];
-  PC = S' * xarr
-  ratio = V.^2/sum(xarr.^2)
-  return(S, V, PC, ratio)
-end
-
-function Fevaluate( FF :: _SVD_Functor, xarr :: Array{Float64,2}, 
-  yarr :: Array{Float64,2}; nsv = 3) 
-  xarr = RemoveTr(xarr)
-  yarr = RemoveTr(yarr)
-  xarr = broadcast(-, xarr,mean(xarr,2))
-  yarr = broadcast(-, yarr,mean(yarr,2))
-  covxy = xarr*yarr'
-  #= (Sx,V,Sy) = svds(covxy,nsv=nsv) =#
-  (Sx,V,Sy) = svd(covxy); 
-  Sx = Sx[:,1:nsv]; V = V[1:nsv]; Sy = Sy[:,1:nsv];
-  PCx = Sx'*xarr
-  PCy = Sy'*yarr
-  ratio = V.^2/sum(covxy.^2)
-  return (Sx, Sy, V, ratio, PCx, PCy)
-end
 
 function DFevaluate(EE :: _EOF_Functor,xarr :: Array{Float64},
                     Dim1 :: Array{Int64,1} ;nsv  :: Int64 = 3)
@@ -120,7 +74,7 @@ function DFevaluate (SS :: _SVD_Functor,
   return (Sx,Sy,ratio,V,Pctx,Pcty)
 end
 
-export masks_Forward_Backward
 export masks_NaN_Forward_2dim
 export Fevaluate
 export DFevaluate
+
