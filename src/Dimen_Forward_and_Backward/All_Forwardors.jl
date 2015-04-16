@@ -28,11 +28,15 @@ type _SVD_Functor <: Met_DA_Functor{2} end
 EOFF = _EOF_Functor(); SVDF = _SVD_Functor();
 export EOFF, _EOF_Functor, SVDF, _SVD_Functor;
 
-function Fevaluate(EE :: Met_DA_Functor{1} ,x)
+type _Mean_Functor <: Met_DA_Functor{1} end
+type _Sum_Functor <: Met_DA_Functor{1} end
+SUMF = _Sum_Functor(); MEANF = _Mean_Functor()
+export SUMF, MEANF
+function Fevaluate{N}(EE :: Met_DA_Functor{N} ,x)
   error("No function for pure")
 end
 
-function DFevaluate(EE :: Met_DA_Functor{1} ,x)
+function DFevaluate{N}(EE :: Met_DA_Functor{N} ,x)
   error("No function for pure")
 end
 
