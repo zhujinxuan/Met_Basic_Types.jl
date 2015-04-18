@@ -74,12 +74,13 @@ function DFevaluate (SS :: _SVD_Functor,
   return (Sx,Sy,ratio,V,Pctx,Pcty)
 end
 
-function DFevaluate( MM :: _Mean_Functor , xarr, Dim1 :: Array{Int64,1})
+function DFevaluate( MM :: _Mean_Functor , xarr :: Array{Float64}, Dim1 :: Array{Int64,1})
   xa = copy(xarr)
   ref = fill(1.0,size(xa)); ref[isnan(xa)] = 0.0
   xa[isnan(xa)] = 0.0
   return mean(xa,Dim1) ./ mean(ref, Dim1)
 end
+
 
 export masks_NaN_Forward_2dim
 export Fevaluate

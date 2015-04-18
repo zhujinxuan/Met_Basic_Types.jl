@@ -24,9 +24,12 @@ type _AR2_REG <: REG_Functor end
 
 type _EOF_Functor <: Met_DA_Functor{1} end
 type _SVD_Functor <: Met_DA_Functor{2} end
+type _COV_Functor <: Met_DA_Functor{2} end
 
 EOFF = _EOF_Functor(); SVDF = _SVD_Functor();
+COVF = _COV_Functor();
 export EOFF, _EOF_Functor, SVDF, _SVD_Functor;
+export COVF, _COV_Functor;
 
 type _Mean_Functor <: Met_DA_Functor{1} end
 type _Sum_Functor <: Met_DA_Functor{1} end
@@ -68,7 +71,11 @@ function Fevaluate( FF :: _SVD_Functor, xarr :: Array{Float64,2},
 end
 export Fevaluate
 
+function Fevaluate( CV :: _COV_Functor, xarr :: Array{Float64,2}, yarr :: Array{Float64,2};
+                   meanidx :: Int64 = size(xarrr,2))
+  return xarr * yarr'/ meanidx
+end
+
 
 include("NaN_Forward_and_Backward.jl")
 include("Weighted_Forward_Backward.jl")
-
