@@ -16,7 +16,7 @@ function Selected_within{N}(p_area :: AnArea_Regular,
                             sst :: Array{Float64,N}; map_to :: Symbol = :default) 
   plon_s = p_area.plon_selected_on_by 
   data_s = p_area.data_selected_on_plon_by
-  sst1 = reshape(sst ,length(plon_s), reduce(*,size(sst,[3:ndims(sst)]...)))
+  sst1 = reshape(sst ,length(plon_s), reduce(*,size(sst,[3:ndims(sst);]...)))
 
   if (map_to == :default )
     sst1 = sst1[find(plon_s[:]),:];
