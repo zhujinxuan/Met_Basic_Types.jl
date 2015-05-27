@@ -1,7 +1,6 @@
-
 type Time_Smoother <: Time_Operator
-  DefaultDim :: (Int64...,)
-  Smoothed_Samples :: (Int64...,)
+  DefaultDim :: Tuple{Int64,Vararg{Int64}}
+  Smoothed_Samples :: Tuple{Int64,Vararg{Int64}}
 end
 
 function T_Smoother ( Dim  , Smoothed_Samples )
@@ -9,14 +8,16 @@ function T_Smoother ( Dim  , Smoothed_Samples )
 end
 
 function TProcess{N} (sst :: Array{Float64,N}, TS :: Time_Smoother, 
-                      Dim :: (Int64...,) = TS.DefaultDim )
+                      Dim :: Tuple{Int64,Vararg{Int64}} = TS.DefaultDim, check :: Bool= true)
 
   sst1 = sst 
   for (d,s) in zip(Dim, TS.Smoothed_Samples)
     if (s !=1)
       dsst = size(sst1, d)
       inds = [s:s:dsst;]
-      sst1 = slicedim(sst1, d, 1:inds[end])
+      if (!check)
+        sst1 = slicedim(sst1, d, 1:inds[end])
+      end
       si = [size(sst1)...;];
       si[d] = s; insert!(si,d+1,length(inds));
       sst1 = squeeze(mean(reshape(sst1, si...),d),d)

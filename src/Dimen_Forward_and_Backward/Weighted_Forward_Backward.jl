@@ -1,7 +1,7 @@
 
 type mask_Weight <: masks_Forward_Backward
-  Dim1 :: (Int64...,)
-  Weight :: (Array{Float64,1}...,)
+  Dim1 :: Tuple{Int64,Vararg{Int64}}
+  Weight :: Tuple{Array{Float64,1},Vararg{Array{Float64,1}}}
 end
 
 function mask_Weight(Dim1 :: Int64, Weight :: Array{Float64,1} )
@@ -25,7 +25,8 @@ end
 
 export mask_Weight, W_Forward
 
-function BackwardD2(xarr :: Array{Float64}, M :: mask_Weight; Dim :: (Int64...,) = M.Dim1)
+function BackwardD2(xarr :: Array{Float64}, M :: mask_Weight; 
+                    Dim :: Tuple{Int64,Vararg{Int64}} = M.Dim1)
   ya = copy(xarr)
   for (d,w) in zip(Dim, M.Weight)
     ds = fill(1, ndims(ya))
