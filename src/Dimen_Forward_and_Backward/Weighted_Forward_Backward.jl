@@ -39,7 +39,7 @@ function BackwardD2(xarr :: Array{Float64}, M :: mask_Weight;
 end
 export BackwardD2
 
-function Wevaluate (SS :: _SVD_Functor, 
+function Wevaluate(SS :: _SVD_Functor, 
                      xarr :: Array{Float64}, yarr :: Array{Float64},
                      Mx :: mask_Weight ,
                      My :: mask_Weight ,
@@ -56,7 +56,7 @@ function Wevaluate (SS :: _SVD_Functor,
   return (Sx,Sy,ratio,V,Pctx,Pcty)
 end
 
-function Wevaluate (EE :: _EOF_Functor,
+function Wevaluate(EE :: _EOF_Functor,
                      xarr :: Array{Float64}, 
                      Mx :: mask_Weight ,
                      NanDim1x :: Array{Int64,1}; 
@@ -68,7 +68,7 @@ function Wevaluate (EE :: _EOF_Functor,
   return (Sx,V,D, ratio)
 end
 
-function Wevaluate ( MM :: _Mean_Functor, xarr :: Array{Float64}, 
+function Wevaluate( MM :: _Mean_Functor, xarr :: Array{Float64}, 
                      Mx :: mask_Weight, Dim1 :: Array{Int64,1})
   ref = fill(1.0, size(xarr)); ref[isnan(xarr)] = NaN;
   (refw,) = W_Forward(ref , Mx)
@@ -76,7 +76,7 @@ function Wevaluate ( MM :: _Mean_Functor, xarr :: Array{Float64},
   return DFevaluate(MM, xarw,  Dim1) ./ DFevaluate(MM, refw,  Dim1)
 end
 
-function WMTIndex ( pattern :: Array{Float64}, xarr :: Array{Float64}, 
+function WMTIndex( pattern :: Array{Float64}, xarr :: Array{Float64}, 
                   Mx :: mask_Weight, PDim :: Array{Int64,1} = [1:ndims(pattern);] )
   M2 = mask_Weight(Mx.Dim1, map(sqrt,Mx.Weight))
   (x1,) = W_Forward(xarr, M2)

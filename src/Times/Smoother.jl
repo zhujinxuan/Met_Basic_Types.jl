@@ -3,11 +3,11 @@ type Time_Smoother <: Time_Operator
   Smoothed_Samples :: Tuple{Int64,Vararg{Int64}}
 end
 
-function T_Smoother ( Dim  , Smoothed_Samples )
+function T_Smoother( Dim  , Smoothed_Samples )
   Time_Smoother(tuple(Dim...), tuple(Smoothed_Samples...))
 end
 
-function TProcess{N} (sst :: Array{Float64,N}, TS :: Time_Smoother, 
+function TProcess{N}(sst :: Array{Float64,N}, TS :: Time_Smoother, 
                       Dim :: Tuple{Int64,Vararg{Int64}} = TS.DefaultDim, check :: Bool= true)
 
   sst1 = sst 

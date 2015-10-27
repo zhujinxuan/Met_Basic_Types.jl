@@ -39,7 +39,7 @@ function update_ratio(WS :: Updating_WorkingSet,
   end
 end
 
-function linear_update_ratio (i :: Int64, ratio_line :: Array{Float64},  
+function linear_update_ratio(i :: Int64, ratio_line :: Array{Float64},  
                               up_to :: Float64, down_to :: Float64, distance :: Array{Float64})
   m_line = ones(size(ratio_line))
   index_m = falses(size(ratio_line)) 

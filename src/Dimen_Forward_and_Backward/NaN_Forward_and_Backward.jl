@@ -59,7 +59,7 @@ function DFevaluate(EE :: _EOF_Functor,xarr :: Array{Float64},
   return (S2,V,D,ratio)
 end
 
-function DFevaluate (SS :: _SVD_Functor, 
+function DFevaluate(SS :: _SVD_Functor, 
                      xarr :: Array{Float64}, yarr :: Array{Float64},
                      Dim1x :: Array{Int64,1}, Dim1y :: Array{Int64,1} = Dim1x
                      ;nsv :: Int64 = 3)
